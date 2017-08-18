@@ -1,0 +1,93 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.savantly.log4j2</groupId>
+	<artifactId>extended-jsonlayout</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>extended-jsonlayout</name>
+	<description>A customizable JSONLayout for Log4j2</description>
+	<scm>
+		<url>https://github.com/savantly-net/log4j2-extended-jsonlayout</url>
+		<connection>https://github.com/savantly-net/log4j2-extended-jsonlayout.git</connection>
+	</scm>
+	<issueManagement>
+		<url>https://github.com/savantly-net/log4j2-extended-jsonlayout/issues</url>
+		<system>GitHub</system>
+	</issueManagement>
+	<parent>
+		<groupId>net.savantly</groupId>
+		<artifactId>parent-pom</artifactId>
+		<version>1.0.0-RELEASE</version>
+	</parent>
+	<developers>
+		<developer>
+			<name>Jeremy Branham</name>
+			<email>jeremy@savantly.net</email>
+			<url>https://www.linkedin.com/in/jeremybranham</url>
+			<organization>Savantly.net</organization>
+			<organizationUrl>http://Savantly.net</organizationUrl>
+			<timezone>-6</timezone>
+		</developer>
+	</developers>
+	<licenses>
+		<license>
+			<name>Apache License Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+		</license>
+	</licenses>
+	<inceptionYear>2016</inceptionYear>
+
+	<properties>
+		<log4j2.version>2.8.2</log4j2.version>
+		<jackson.version>2.8.7</jackson.version>
+		<junit.version>4.12</junit.version>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>${log4j2.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>${log4j2.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+
+		<!-- TEST -->
+		<!-- https://mvnrepository.com/artifact/junit/junit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+
+
+
+	</dependencies>
+</project>
