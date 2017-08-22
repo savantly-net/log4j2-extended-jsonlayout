@@ -4,8 +4,7 @@ package org.apache.logging.log4j.core.layout;
 
 import java.io.IOException;
 import java.util.Map.Entry;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -16,30 +15,10 @@ import com.fasterxml.jackson.databind.type.SimpleType;
 
 public final class ExtendedJsonSerializer extends BeanSerializer {
 	
-    private Predicate filter = new Predicate<Entry<String, String>>() {
-		@Override
-		public boolean test(Entry<String, String> entry) {
-			return entry.getValue() != null;
-		}
-	};
-	
-	private Consumer getConsumer(final JsonGenerator gen){
-		return new Consumer<Entry<String, String>>() {
-			@Override
-			public void accept(Entry<String, String> entry) {
-			    try {
-			        gen.writeFieldName(entry.getKey());
-			        gen.writeRawValue(entry.getValue());
-			    } catch (IOException e) {
-			        throw new RuntimeException(e);
-			    }
-			}
-		};
-	}
-	
+	private static final long serialVersionUID = 1L;
 
-    public ExtendedJsonSerializer() {
-        super(SimpleType.construct(ExtendedJsonWrapper.class), null, new BeanPropertyWriter[0], new BeanPropertyWriter[0]);
+	public ExtendedJsonSerializer() {
+        super(SimpleType.constructUnsafe(ExtendedJsonWrapper.class), null, new BeanPropertyWriter[0], new BeanPropertyWriter[0]);
     }
 
     public ExtendedJsonSerializer(BeanSerializerBase base) {
@@ -47,19 +26,28 @@ public final class ExtendedJsonSerializer extends BeanSerializer {
     }
 
     @Override
-    protected void serializeFields(Object bean, JsonGenerator gen, SerializerProvider provider) throws IOException {
+    protected void serializeFields(Object bean, final JsonGenerator gen, SerializerProvider provider) throws IOException {
         if (bean instanceof ExtendedJsonWrapper) {
-            ExtendedJsonWrapper mixin  = (ExtendedJsonWrapper) bean;
-            Object      origin = mixin.getOrigin();
+            ExtendedJsonWrapper mixin = (ExtendedJsonWrapper) bean;
+            Object origin = mixin.getOrigin();
 
-            BeanSerializer serializer = (BeanSerializer) provider.findValueSerializer(SimpleType.construct(origin.getClass()));
+            BeanSerializer serializer = (BeanSerializer) provider.findValueSerializer(origin.getClass());
+            new ExtendedJsonSerializer(serializer).serializeFieldsFiltered(origin, gen, provider);
+            
+            Set<Entry<String, Object>> entries = mixin.getMixed().entrySet();
+            
+            //gen.writeObjectField("mixedIn", mixin.getMixed());
+            
+            for (Entry<String, Object> entry : entries) {
+				if(entry.getValue() != null){
+					 try {
+     			        gen.writeObjectField(entry.getKey(), entry.getValue());
+     			    } catch (IOException e) {
+     			        throw new RuntimeException(e);
+     			    }
+				}
+			}
 
-            new ExtendedJsonSerializer(serializer).serializeFields(origin, gen, provider);
-
-            mixin.getMixed().entrySet()
-                    .stream()
-                    .filter(filter)
-                    .forEach(getConsumer(gen));
         } else {
             super.serializeFields(bean, gen, provider);
         }

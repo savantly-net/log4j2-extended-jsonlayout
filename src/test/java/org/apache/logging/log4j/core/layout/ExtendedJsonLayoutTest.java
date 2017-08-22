@@ -21,6 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -46,6 +47,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
 
 /**
  * Tests the ExtendedJsonLayout class.
@@ -143,7 +146,9 @@ public class ExtendedJsonLayoutTest {
         assertEquals(str, !compact || eventEol, str.contains("\n"));
         assertEquals(str, locationInfo, str.contains("source"));
         assertEquals(str, includeContext, str.contains("contextMap"));
-        final Log4jLogEvent actual = new Log4jJsonObjectMapper(contextMapAslist, includeStacktrace).readValue(str, Log4jLogEvent.class);
+        Log4jJsonObjectMapper mapper = new Log4jJsonObjectMapper(contextMapAslist, includeStacktrace);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        final Log4jLogEvent actual = mapper.readValue(str, Log4jLogEvent.class);
         LogEventFixtures.assertEqualLogEvents(expected, actual, locationInfo, includeContext, includeStacktrace);
         if (includeContext) {
             this.checkMapEntry("MDC.A", "A_Value", compact, str, contextMapAslist);
@@ -251,6 +256,51 @@ public class ExtendedJsonLayoutTest {
             this.rootLogger.addAppender(app);
         }
     }
+    
+    @Test
+    public void testMixedInFields() throws Exception {
+        final Map<String, Appender> appenders = this.rootLogger.getAppenders();
+        for (final Appender appender : appenders.values()) {
+            this.rootLogger.removeAppender(appender);
+        }
+        final Configuration configuration = rootLogger.getContext().getConfiguration();
+        // set up appender
+        final boolean propertiesAsList = false;
+        // @formatter:off
+        final AbstractJacksonLayout layout = ExtendedJsonLayout.newBuilder()
+                .setConfiguration(configuration)
+                .setLocationInfo(true)
+                .setProperties(true)
+                .setPropertiesAsList(propertiesAsList)
+                .setComplete(true)
+                .setCompact(false)
+                .setEventEol(false)
+                .setIncludeStacktrace(true)
+                .build();
+        // @formatter:on
+        final ListAppender appender = new ListAppender("List", null, layout, true, false);
+        appender.start();
+
+        // set appender on root and set level to debug
+        this.rootLogger.addAppender(appender);
+        this.rootLogger.setLevel(Level.DEBUG);
+
+        // output starting message
+        this.rootLogger.debug("should have the mixedIn field containing a 'hostname' value");
+
+        appender.stop();
+
+        final List<String> list = appender.getMessages();
+
+        this.checkAt("[", 0, list);
+        this.checkAt("{", 1, list);
+        this.checkContains("\"level\" : \"DEBUG\",", list);
+        this.checkContains("\"loggerFqcn\" : \"" + AbstractLogger.class.getName() + "\",", list);
+        this.checkContains("\"hostname\" : \""+ InetAddress.getLocalHost().getHostName() +"\"", list);
+        for (final Appender app : appenders.values()) {
+            this.rootLogger.addAppender(app);
+        }
+    }
 
     /**
      * Test case for MDC conversion pattern.
@@ -342,6 +392,7 @@ public class ExtendedJsonLayoutTest {
         final String str = layout.toSerializable(expected);
         assertTrue(str, str.contains("\"loggerName\":\"a.B\""));
         Log4jJsonObjectMapper mapper = new Log4jJsonObjectMapper(propertiesAsList, true);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         final Log4jLogEvent actual = mapper.readValue(str, Log4jLogEvent.class);
         assertEquals(expected.getLoggerName(), actual.getLoggerName());
         assertEquals(expected, actual);

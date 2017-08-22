@@ -368,8 +368,9 @@ public class ExtendedJsonLayout extends AbstractJacksonLayout {
     }
     
     static protected ObjectWriter getObjectWriter(boolean encodeThreadContextAsList, boolean includeStacktrace, boolean locationInfo, boolean properties, boolean compact){
-    	return new JacksonFactory.JSON(encodeThreadContextAsList, includeStacktrace).newWriter(
+    	ObjectWriter writer = new JacksonFactory.JSON(encodeThreadContextAsList, includeStacktrace).newWriter(
                 locationInfo, properties, compact);
+    	return writer;
     }
 
     /**
@@ -447,13 +448,13 @@ public class ExtendedJsonLayout extends AbstractJacksonLayout {
         if (complete && eventCount > 0) {
             writer.append(", ");
         }
-        objectWriter.writeValue(writer, convertLog4jEventToExtendedJsonWrapper(event));
+        this.objectWriter.writeValue(writer, convertLog4jEventToExtendedJsonWrapper(event));
         writer.write(eol);
         markEvent();
     }
     
     private ExtendedJsonWrapper convertLog4jEventToExtendedJsonWrapper(LogEvent event){
-    	ExtendedJsonWrapper wrapper = new ExtendedJsonWrapper(convertMutableToLog4jEvent(event));
+    	ExtendedJsonWrapper wrapper = new ExtendedJsonWrapper(convertMutableToLog4jEvent(event), jsonAdapter.getMixedFields());
     	return wrapper;
     }
     
