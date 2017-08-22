@@ -345,6 +345,7 @@ public class ExtendedJsonLayout extends AbstractJacksonLayout {
 
 	private ExtendedJson jsonAdapter;
 
+
     protected ExtendedJsonLayout(final Configuration config, final boolean locationInfo, final boolean properties,
             final boolean encodeThreadContextAsList,
             final boolean complete, final boolean compact, final boolean eventEol, final String headerPattern,
