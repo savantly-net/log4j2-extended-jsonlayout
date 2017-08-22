@@ -3,12 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.savantly.log4j2</groupId>
 	<artifactId>extended-jsonlayout</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>extended-jsonlayout</name>
 	<description>A customizable JSONLayout for Log4j2</description>
 	<scm>
 		<url>https://github.com/savantly-net/log4j2-extended-jsonlayout</url>
 		<connection>scm:git:https://github.com/savantly-net/log4j2-extended-jsonlayout.git</connection>
+		<tag>HEAD</tag>
 	</scm>
 	<issueManagement>
 		<url>https://github.com/savantly-net/log4j2-extended-jsonlayout/issues</url>
