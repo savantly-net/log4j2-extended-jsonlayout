@@ -27,6 +27,24 @@ Inside your log4j2 configuration, you can configure the new pattern "ExtendedJso
 	
 ```  
 
+The default ExtendedJson implementation Produces output like below -  
+```
+{
+  "timeMillis" : 1503426388690,
+  "thread" : "main",
+  "level" : "INFO",
+  "loggerName" : "org.hibernate.validator.internal.xml.ValidationXmlParser",
+  "message" : "HV000007: META-INF/validation.xml found. Parsing XML based configuration.",
+  "endOfBatch" : false,
+  "loggerFqcn" : "org.hibernate.validator.internal.util.logging.Log_$logger",
+  "contextMap" : { },
+  "threadId" : 1,
+  "threadPriority" : 5,
+  "hostname" : "MY-LAPTOP"
+}
+``` 
+
+
 
 ### Add custom Json Fields  
 
@@ -40,7 +58,7 @@ And configure the class name in your log configuration -
 ```
 
 
-### Example Implementation  
+### Example Custom Implementation  
 
 ```
 package com.example;
