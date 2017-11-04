@@ -48,7 +48,7 @@ The default ExtendedJson implementation Produces output like below -
 
 ### Add custom Json Fields  
 
-Implement the ExtendedJson interface (./src/main/java/org/apache/logging/log4j/core/layout/ExtendedJson.java)  
+Implement the [ExtendedJson interface](./src/main/java/org/apache/logging/log4j/core/layout/ExtendedJson.java)  
 And configure the class name in your log configuration -  
 
 ``` 
