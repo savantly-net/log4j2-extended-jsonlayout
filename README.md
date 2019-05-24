@@ -16,6 +16,22 @@ Customizable JSONLayout for Log4j2
 Use v2.8.0 for log4j2 v2.8.x  
 use v2.9.0-SNAPSHOT for log4j2 v2.9.x  
 
+If you're using a SNAPSHOT, add the sonatype snapshot repository to your pom.  
+```
+<repositories>
+  <repository>
+    <id>oss.sonatype.org-snapshot</id>
+    <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+    <releases>
+      <enabled>false</enabled>
+    </releases>
+    <snapshots>
+      <enabled>true</enabled>
+    </snapshots>
+  </repository>
+</repositories>
+ ```
+
 
 ### Example Usage  
 
