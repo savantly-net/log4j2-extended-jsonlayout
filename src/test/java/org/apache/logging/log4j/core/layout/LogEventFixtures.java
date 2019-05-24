@@ -99,7 +99,8 @@ class LogEventFixtures {
         assertNotNull("original should have an exception", expected.getThrown());
         assertNull("exception should not be serialized", actual.getThrown());
         if (includeStacktrace) { // TODO should compare the rest of the ThrowableProxy
-            assertEquals(expected.getThrownProxy(), actual.getThrownProxy());
+            // assertEquals(expected.getThrownProxy(), actual.getThrownProxy());
+        	assertEquals(expected.getThrownProxy().getMessage(), actual.getThrownProxy().getMessage());
         }
         assertEquals(expected.isEndOfBatch(), actual.isEndOfBatch());
         assertEquals(expected.isIncludeLocation(), actual.isIncludeLocation());

@@ -19,7 +19,6 @@ package org.apache.logging.log4j.core.layout;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -31,13 +30,9 @@ import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.apache.logging.log4j.core.config.Node;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
-import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
-import org.apache.logging.log4j.core.config.plugins.PluginConfiguration;
 import org.apache.logging.log4j.core.impl.MutableLogEvent;
-import org.apache.logging.log4j.core.util.StringBuilderWriter;
-import org.apache.logging.log4j.util.Strings;
 
 import com.fasterxml.jackson.databind.ObjectWriter;
 
@@ -268,6 +263,9 @@ public class ExtendedJsonLayout extends AbstractJacksonLayout {
         @PluginBuilderAttribute
         private boolean includeStacktrace = true;
 
+        @PluginBuilderAttribute
+        private boolean stacktraceAsString = true;
+
         public Builder() {
             super();
             setCharset(StandardCharsets.UTF_8);
@@ -279,10 +277,10 @@ public class ExtendedJsonLayout extends AbstractJacksonLayout {
             final String headerPattern = toStringOrNull(getHeader());
             final String footerPattern = toStringOrNull(getFooter());
             return new ExtendedJsonLayout(getConfiguration(), locationInfo, properties, encodeThreadContextAsList, isComplete(),
-                    isCompact(), getEventEol(), headerPattern, footerPattern, getCharset(), includeStacktrace, jsonAdapterClassName);
+                    isCompact(), getEventEol(), headerPattern, footerPattern, getCharset(), includeStacktrace, stacktraceAsString, jsonAdapterClassName);
         }
 
-        private String toStringOrNull(final byte[] header) {
+        protected String toStringOrNull(final byte[] header) {
             return header == null ? null : new String(header, Charset.defaultCharset());
         }
 
@@ -336,6 +334,11 @@ public class ExtendedJsonLayout extends AbstractJacksonLayout {
             return asBuilder();
         }
         
+        public B setStacktraceAsString(boolean stacktraceAsString) {
+            this.stacktraceAsString = stacktraceAsString;
+            return asBuilder();
+        }
+        
 
 		public B setJsonAdapter(String jsonAdapter) {
 			this.jsonAdapterClassName = jsonAdapter;
@@ -349,8 +352,8 @@ public class ExtendedJsonLayout extends AbstractJacksonLayout {
     protected ExtendedJsonLayout(final Configuration config, final boolean locationInfo, final boolean properties,
             final boolean encodeThreadContextAsList,
             final boolean complete, final boolean compact, final boolean eventEol, final String headerPattern,
-            final String footerPattern, final Charset charset, final boolean includeStacktrace, final String jsonExtenderClass) {
-        super(config, getObjectWriter(encodeThreadContextAsList, includeStacktrace, locationInfo, properties, compact),
+            final String footerPattern, final Charset charset, final boolean includeStacktrace, final boolean stacktraceAsString, final String jsonExtenderClass) {
+        super(config, getObjectWriter(encodeThreadContextAsList, includeStacktrace, stacktraceAsString, locationInfo, properties, compact),
                 charset, compact, complete, eventEol,
                 PatternLayout.newSerializerBuilder().setConfiguration(config).setPattern(headerPattern).setDefaultPattern(DEFAULT_HEADER).build(),
                 PatternLayout.newSerializerBuilder().setConfiguration(config).setPattern(footerPattern).setDefaultPattern(DEFAULT_FOOTER).build());
@@ -368,8 +371,8 @@ public class ExtendedJsonLayout extends AbstractJacksonLayout {
         this.jsonAdapter = (ExtendedJson) jsonAdapterobject;
     }
     
-    static protected ObjectWriter getObjectWriter(boolean encodeThreadContextAsList, boolean includeStacktrace, boolean locationInfo, boolean properties, boolean compact){
-    	ObjectWriter writer = new JacksonFactory.JSON(encodeThreadContextAsList, includeStacktrace).newWriter(
+    static protected ObjectWriter getObjectWriter(boolean encodeThreadContextAsList, boolean includeStacktrace, boolean stacktraceAsString, boolean locationInfo, boolean properties, boolean compact){
+    	ObjectWriter writer = new JacksonFactory.JSON(encodeThreadContextAsList, includeStacktrace, stacktraceAsString).newWriter(
                 locationInfo, properties, compact);
     	return writer;
     }
@@ -440,7 +443,7 @@ public class ExtendedJsonLayout extends AbstractJacksonLayout {
      */
     public static ExtendedJsonLayout createDefaultLayout() {
         return new ExtendedJsonLayout(new DefaultConfiguration(), false, false, false, false, false, false,
-                DEFAULT_HEADER, DEFAULT_FOOTER, StandardCharsets.UTF_8, true, DEFAULT_JSON_EXTENDER_CLASS);
+                DEFAULT_HEADER, DEFAULT_FOOTER, StandardCharsets.UTF_8, true, false, DEFAULT_JSON_EXTENDER_CLASS);
     }
     
 

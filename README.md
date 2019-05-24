@@ -10,9 +10,12 @@ Customizable JSONLayout for Log4j2
 		<dependency>
 			<groupId>net.savantly.log4j2</groupId>
 			<artifactId>extended-jsonlayout</artifactId>
-			<version>1.0.0</version>
+			<version>2.8.0</version>
 		</dependency>
-```
+```  
+Use v2.8.0 for log4j2 v2.8.x  
+use v2.9.0-SNAPSHOT for log4j2 v2.9.x  
+
 
 ### Example Usage  
 
