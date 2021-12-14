@@ -39,7 +39,7 @@
 	<inceptionYear>2016</inceptionYear>
 
 	<properties>
-		<log4j2.version>2.9.0</log4j2.version>
+		<log4j2.version>2.16.0</log4j2.version>
 		<jackson.version>2.9.10.1</jackson.version>
 		<junit.version>4.12</junit.version>
 	</properties>
